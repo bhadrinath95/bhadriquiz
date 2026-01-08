@@ -20,7 +20,10 @@ def start_quiz(request, topic_slug):
 
 def submit_quiz(request, topic_slug):
     topic = get_object_or_404(Topic, slug=topic_slug)
-    questions = Question.objects.filter(topic=topic)
+
+    question_ids = request.POST.getlist('question_ids')
+    questions = Question.objects.filter(id__in=question_ids)
+
     attempt = QuizAttempt.objects.create(
         user=request.user,
         topic=topic,
@@ -33,9 +36,11 @@ def submit_quiz(request, topic_slug):
     for q in questions:
         selected_id = request.POST.get(str(q.id))
         selected_option = Option.objects.filter(id=selected_id).first()
+
         is_correct = selected_option.is_correct_ans if selected_option else False
         if is_correct:
             correct_count += 1
+
         UserAnswer.objects.create(
             attempt=attempt,
             question=q,
@@ -45,7 +50,10 @@ def submit_quiz(request, topic_slug):
 
     attempt.correct_ans = correct_count
     attempt.percent_correct = (correct_count / questions.count()) * 100
-    attempt.wrong_questions = [ua.question.id for ua in attempt.user_answers.filter(is_correct=False)]
+    attempt.wrong_questions = list(
+        attempt.user_answers.filter(is_correct=False)
+        .values_list('question_id', flat=True)
+    )
     attempt.save()
 
     return redirect('quiz_result', attempt_id=attempt.id)
