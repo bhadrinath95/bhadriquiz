@@ -3,12 +3,18 @@ from .models import Topic, Question, Option, QuizAttempt, UserAnswer
 
 class OptionInline(admin.TabularInline):
     model = Option
-    extra = 4
-    min_num = 2
+    extra = 1
+    min_num = 4
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('question', 'topic')
+    list_display = ('question', 'get_correct_answer', 'topic')
     inlines = [OptionInline]
+
+    def get_correct_answer(self, obj):
+        correct_option = obj.options.filter(is_correct_ans=True).first()
+        return correct_option.option_text if correct_option else "-"
+    
+    get_correct_answer.short_description = 'Correct Answer'
 
 class TopicAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
