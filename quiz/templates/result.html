@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3 class="text-center mb-4">{{ attempt.topic.name }} – Result</h3>
+
+<div class="alert alert-info text-center">
+    Score: {{ attempt.correct_ans }} / {{ attempt.attempted }}
+    ({{ attempt.percent_correct|floatformat:2 }}%)
+</div>
+
+{% for ans in answers %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>{{ forloop.counter }}. {{ ans.question.question }}</h5>
+        {% if ans.is_correct %}
+            <span class="badge bg-success">Correct</span>
+        {% else %}
+            <span class="badge bg-danger">Wrong</span>
+            <p><strong>Correct Answer:</strong> {{ ans.correct_option.option_text }}</p>
+            <div class="alert alert-warning">{{ ans.question.answer_description|linebreaksbr }}</div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+<div class="text-center mt-4">
+    {% if attempt.correct_ans < attempt.attempted %}
+    <a href="{% url 'retake_wrong' attempt.id %}" class="btn btn-warning me-2">Retake Wrong Questions</a>
+    {% endif %}
+    <a href="{% url 'start_quiz' attempt.topic.slug %}" class="btn btn-secondary">Retake Full Quiz</a>
+</div>
+
+{% endblock %}
