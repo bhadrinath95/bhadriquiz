@@ -8,7 +8,6 @@ def topic_list(request):
     return render(request, 'topic_list.html', {'topics': topics})
 
 
-@login_required
 def start_quiz(request, topic_slug):
     topic = get_object_or_404(Topic, slug=topic_slug)
     questions = list(Question.objects.filter(topic=topic))
@@ -19,7 +18,6 @@ def start_quiz(request, topic_slug):
     return render(request, 'start_quiz.html', {'topic': topic, 'questions': questions})
 
 
-@login_required
 def submit_quiz(request, topic_slug):
     topic = get_object_or_404(Topic, slug=topic_slug)
     questions = Question.objects.filter(topic=topic)
@@ -53,7 +51,6 @@ def submit_quiz(request, topic_slug):
     return redirect('quiz_result', attempt_id=attempt.id)
 
 
-@login_required
 def quiz_result(request, attempt_id):
     attempt = get_object_or_404(QuizAttempt, id=attempt_id)
     answers = []
@@ -78,7 +75,6 @@ def quiz_result(request, attempt_id):
     })
 
 
-@login_required
 def retake_wrong(request, attempt_id):
     attempt = get_object_or_404(QuizAttempt, id=attempt_id)
     wrong_question_ids = attempt.wrong_questions
