@@ -11,7 +11,7 @@ def topic_list(request):
 def start_quiz(request, topic_slug):
     topic = get_object_or_404(Topic, slug=topic_slug)
     questions = list(Question.objects.filter(topic=topic))
-    # Shuffle options for each question
+    random.shuffle(questions)
     for q in questions:
         q.options_list = list(q.options.all())
         random.shuffle(q.options_list)
