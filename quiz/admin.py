@@ -3,8 +3,8 @@ from .models import Topic, Question, Option, QuizAttempt, UserAnswer
 
 class OptionInline(admin.TabularInline):
     model = Option
-    extra = 1
-    min_num = 4
+    extra = 2
+    min_num = 2
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('question', 'get_correct_answer', 'topic')
