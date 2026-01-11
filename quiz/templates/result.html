@@ -2,6 +2,7 @@
 {% block content %}
 <h3 class="text-center mb-4">{{ attempt.topic.name }} – Result</h3>
 
+
 <div class="alert alert-info text-center">
     Score: {{ attempt.correct_ans }} / {{ attempt.attempted }}
     ({{ attempt.percent_correct|floatformat:2 }}%)
@@ -15,6 +16,12 @@
             <span class="badge bg-success">Correct</span>
         {% else %}
             <span class="badge bg-danger">Wrong</span>
+            <p class="mt-2">
+                <strong>Your Answer:</strong>
+                <span class="text-danger">
+                    {{ ans.selected_option.option_text }}
+                </span>
+            </p>
             <p><strong>Correct Answer:</strong> {{ ans.correct_option.option_text }}</p>
             <div class="alert alert-warning">{{ ans.question.answer_description|linebreaksbr }}</div>
         {% endif %}
