@@ -25,7 +25,6 @@ def submit_quiz(request, topic_slug):
     questions = Question.objects.filter(id__in=question_ids)
 
     attempt = QuizAttempt.objects.create(
-        user=request.user,
         topic=topic,
         attempted=questions.count(),
         correct_ans=0
