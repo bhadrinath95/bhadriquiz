@@ -1,4 +1,27 @@
 {% extends 'base.html' %}
+{% block taskbar_icon %}
+<div id="rough-icon" title="Open Rough Sheet" style="
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:50px;
+    height:50px;
+    background:#0d6efd;
+    color:white;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    box-shadow:0 0 10px rgba(0,0,0,0.3);
+    z-index:1100;
+    font-size:24px;
+">
+    📝
+</div>
+
+{% endblock %}
+
 {% block content %}
 <h3 class="text-center mb-4">{{ topic.name }} Quiz</h3>
 
@@ -30,5 +53,113 @@
         <button type="submit" class="btn btn-success">Submit Quiz</button>
     </div>
 </form>
+
+<!-- Rough Sheet Pop-up -->
+<div id="rough-sheet" style="
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    width:400px;
+    height:425px;
+    background:white;
+    border:2px solid #333;
+    border-radius:10px;
+    box-shadow:0 0 15px rgba(0,0,0,0.5);
+    z-index:1050;
+    padding:15px;
+    overflow:auto;
+">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5>Rough Sheet</h5>
+        <button id="close-rough" class="btn btn-sm btn-danger">&times;</button>
+    </div>
+
+    <textarea id="rough-text" style="width:100%; height:100px; margin-bottom:10px;" placeholder="Write notes here..."></textarea>
+
+    <div id="calculator">
+        <input type="text" id="calc-display" style="width:100%; margin-bottom:5px;" readonly>
+        <div class="d-grid gap-1" style="grid-template-columns: repeat(4, 1fr); display:grid;">
+            <button class="calc-btn btn btn-danger">C</button>
+            <button class="calc-btn btn btn-secondary">(</button>
+            <button class="calc-btn btn btn-secondary">)</button>
+            <button class="calc-btn btn btn-warning">^</button>
+
+            <button class="calc-btn btn btn-secondary">7</button>
+            <button class="calc-btn btn btn-secondary">8</button>
+            <button class="calc-btn btn btn-secondary">9</button>
+            <button class="calc-btn btn btn-warning">/</button>
+
+            <button class="calc-btn btn btn-secondary">4</button>
+            <button class="calc-btn btn btn-secondary">5</button>
+            <button class="calc-btn btn btn-secondary">6</button>
+            <button class="calc-btn btn btn-warning">*</button>
+
+            <button class="calc-btn btn btn-secondary">1</button>
+            <button class="calc-btn btn btn-secondary">2</button>
+            <button class="calc-btn btn btn-secondary">3</button>
+            <button class="calc-btn btn btn-warning">-</button>
+
+            <button class="calc-btn btn btn-secondary">0</button>
+            <button class="calc-btn btn btn-secondary">.</button>
+            <button class="calc-btn btn btn-success">=</button>
+            <button class="calc-btn btn btn-warning">+</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block static %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roughSheet = document.getElementById('rough-sheet');
+    const closeBtn = document.getElementById('close-rough');
+    const roughIcon = document.getElementById('rough-icon');
+
+    // Open rough sheet on pressing 'N' or clicking icon
+    document.addEventListener('keydown', function(e) {
+        if (e.key.toLowerCase() === 'n') {
+            roughSheet.style.display = 'block';
+        }
+    });
+
+    roughIcon.addEventListener('click', function() {
+        roughSheet.style.display = 'block';
+    });
+
+    // Close rough sheet
+    closeBtn.addEventListener('click', function() {
+        roughSheet.style.display = 'none';
+    });
+
+    // Calculator logic
+    const display = document.getElementById('calc-display');
+    const buttons = document.querySelectorAll('#calculator .calc-btn');
+    let currentInput = '';
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const val = this.textContent;
+
+            if (val === '=') {
+                try {
+                    const safeInput = currentInput.replace(/\^/g, '**');
+                    currentInput = Function('"use strict";return (' + safeInput + ')')();
+                } catch {
+                    currentInput = 'Error';
+                }
+            } else if (val === 'C') {
+                currentInput = '';
+            } else {
+                currentInput += val;
+            }
+
+            display.value = currentInput;
+        });
+    });
+});
+</script>
 
 {% endblock %}
