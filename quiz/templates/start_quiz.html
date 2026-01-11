@@ -62,7 +62,7 @@
     left:50%;
     transform:translate(-50%, -50%);
     width:400px;
-    height:425px;
+    height:465px;
     background:white;
     border:2px solid #333;
     border-radius:10px;
@@ -81,10 +81,8 @@
     <div id="calculator">
         <input type="text" id="calc-display" style="width:100%; margin-bottom:5px;" readonly>
         <div class="d-grid gap-1" style="grid-template-columns: repeat(4, 1fr); display:grid;">
-            <button class="calc-btn btn btn-danger">C</button>
-            <button class="calc-btn btn btn-secondary">(</button>
-            <button class="calc-btn btn btn-secondary">)</button>
-            <button class="calc-btn btn btn-warning">^</button>
+            <button class="calc-btn btn btn-danger" style="grid-column: span 2;">C</button>
+            <button class="calc-btn btn btn-secondary" style="grid-column: span 2;">⌫</button>
 
             <button class="calc-btn btn btn-secondary">7</button>
             <button class="calc-btn btn btn-secondary">8</button>
@@ -103,8 +101,14 @@
 
             <button class="calc-btn btn btn-secondary">0</button>
             <button class="calc-btn btn btn-secondary">.</button>
-            <button class="calc-btn btn btn-success">=</button>
+            <button class="calc-btn btn btn-warning">^</button>
             <button class="calc-btn btn btn-warning">+</button>
+            
+            <button class="calc-btn btn btn-secondary">(</button>
+            <button class="calc-btn btn btn-secondary">)</button>
+            <button class="calc-btn btn btn-info">ANS</button>
+            <button class="calc-btn btn btn-success">=</button>
+            
         </div>
     </div>
 </div>
@@ -146,13 +150,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if (val === '=') {
                 try {
                     const safeInput = currentInput.replace(/\^/g, '**');
-                    currentInput = Function('"use strict";return (' + safeInput + ')')();
+                    lastAnswer = Function('"use strict";return (' + safeInput + ')')();
+                    currentInput = lastAnswer.toString();
                 } catch {
                     currentInput = 'Error';
                 }
             } else if (val === 'C') {
                 currentInput = '';
-            } else {
+            } else if (val === '⌫') {
+                currentInput = currentInput.slice(0, -1);
+            } else if (val === 'ANS' && lastAnswer !== '') {
+                currentInput += lastAnswer;
+            }   else {
                 currentInput += val;
             }
 
